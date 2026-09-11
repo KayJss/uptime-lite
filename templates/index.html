@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Uptime Lite</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="container">
+    <header>
+      <div>
+        <p class="eyebrow">UPTIME LITE</p>
+        <h1>Endpoint health at a glance.</h1>
+        <p class="subtitle">Check availability, HTTP status and response time without a heavy monitoring stack.</p>
+      </div>
+    </header>
+
+    <form class="checker" method="get">
+      <label for="targets">Websites <span>comma separated, max 10</span></label>
+      <div class="input-row">
+        <input id="targets" name="targets" value="{{ targets }}" placeholder="example.com, github.com">
+        <button type="submit">Run checks</button>
+      </div>
+    </form>
+
+    <section class="grid">
+      {% for result in results %}
+      <article class="card">
+        <div class="card-top">
+          <span class="dot {{ 'up' if result.online else 'down' }}"></span>
+          <span class="state">{{ 'ONLINE' if result.online else 'OFFLINE' }}</span>
+        </div>
+        <h2>{{ result.url }}</h2>
+        <div class="metrics">
+          <div><span>Status</span><strong>{{ result.status_code or '—' }}</strong></div>
+          <div><span>Response</span><strong>{{ (result.response_time_ms|string + ' ms') if result.response_time_ms is not none else '—' }}</strong></div>
+        </div>
+        {% if result.error %}<p class="error">{{ result.error }}</p>{% endif %}
+      </article>
+      {% endfor %}
+    </section>
+  </main>
+</body>
+</html>
